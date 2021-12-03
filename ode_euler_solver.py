@@ -1,13 +1,13 @@
-# Library importing 
+# Library importing
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Function evaluation 
+# Function evaluation
 # Receives name and arguments, return the function evaluated
 def feval(funcName, *args):
     return eval(funcName)(*args)
 
-# Defines the numeric resolution of Euler 
+# Defines the numeric resolution of Euler
 def euler_method(func, y_init, t_range, step):
     # Number of initial values
     m = len(y_init)
@@ -30,7 +30,7 @@ def euler_method(func, y_init, t_range, step):
     for i in range(n):
         # Calculate the diferential
         dy = feval(func, t, y)
-        
+
         # Increments
         t = t + step
 
@@ -40,46 +40,78 @@ def euler_method(func, y_init, t_range, step):
         # Storing solutions
         tsol = np.append(tsol, t)
         ysol = np.append(ysol, y)
-    
+
     return [tsol, ysol]
 
-# Defines the evaluated system's ODE(s) 
+# Defines the evaluated system's ODE(s)
 def diferential(t, y):
-    global population_limit, growing_rate
-    population_limit = 500
-    growing_rate = 3
-    growing_rate2 = 5
-    
+    alpha_D = 0
+    DT = 0
+    V_LV = 0
+    V_LN = 0.1
+    alpha_T_c = 0
+    estable_T_c = 0
+    gamma_T = 0
+    theta_BV = 0
+    Tt_c = 0
+    V_BV = 0
+    b_rho = 0
+    rho_B = 0
+    alpha_B = 0
+    estable_B = 0
+    rho_F = 0
+    gamma_F = 0
+    FT = 0
+
     # When working with only one diferential function there must be created a null extra position
-    dy = np.zeros(2)
-    # dy[0] = y[0]
-    dy[0] = growing_rate * y[0] * np.log(population_limit / y[0])
-    dy[1] = growing_rate2 * y[1] * np.log(population_limit / y[1])
+    dy = np.zeros(5)
+
+    # Dendritic cells
+    dy[0] = alpha_D * (DT - y[0]) * (V_LV / V_LN)
+    # Cytotoxic T cells
+    dy[1] = alpha_T_c * (estable_T_c - y[1]) - (gamma_T * theta_BV * (y[1] - Tt_c)) * (V_BV / V_LN)
+    # Helper T cells
+    dy[2] = 0  # TODO tirando dúvida com o Matheus com relação as taxas do TCC
+    # B cells
+    dy[3] = (b_rho * ((rho_B * y[2] * y[0]) - (y[2] * y[0] * y[3]))) + alpha_B * (estable_B - y[3])
+    # Antibodies
+    dy[4] = rho_F - ((gamma_F * theta_BV * (y[4] - FT)) * (V_BV / V_LN))
 
     return dy
 
 # Defines the parameters
 
+
 # Step
 h = 0.01
 
 # Interval
-t_range = np.array([0.0, 4.0])
+t_range = np.array([0.0, 4.0])  # TODO
 
 # Initial values
-y = 1
-y_init = np.array([y, y], dtype='f')
+DL = 0     # Dendritic cells
+TL_c = 0.2  # Cytotoxic T cells
+TL_h = 0.4  # Helper T cells
+B = 0      # B cells
+FL = 0     # Antibodies
+y_init = np.array([DL, TL_c, TL_h, B, FL], dtype='f')
 
 # Calls the Euler method
 [ts, ys] = euler_method('diferential', y_init, t_range, h)
 
 # Prepares the results for visualization
-node = len(y_init)
+node = len(y_init)  # TODO Not working
 ys1 = ys[0::node]
 ys2 = ys[1::node]
+ys3 = ys[2::node]
+ys4 = ys[3::node]
+ys5 = ys[4::node]
 
 plt.plot(ts, ys1)
 plt.plot(ts, ys2)
+plt.plot(ts, ys3)
+plt.plot(ts, ys4)
+plt.plot(ts, ys5)
 # plt.plot(t, func)
 # plt.legend(["D_T", "D_LN", "T"], loc=2)
 # plt.xlabel('horas', fontsize=17)
