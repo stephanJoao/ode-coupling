@@ -45,15 +45,16 @@ def euler_method(func, y_init, t_range, step):
 
 # Defines the evaluated system's ODE(s)
 def diferential(t, y):
-    alpha_D = 0
-    DT = 0
-    V_LV = 0
-    V_LN = 0.1
+    alpha_D = 4.09 # Dendritic cells migration rate (Tissue -> Lymph node)
+    DT = 0         # Dendritic cells in the tissue
+    V_LV = 0       # Volume of the domain areas in contact with lymph vessels
+    V_LN = 0.1     # Volume of the lymph node
     
-    alpha_T_c = 0
+    alpha_T_c = 0   
     estable_T_c = 0
     gamma_T = 0
-    theta_BV = 1 #TODO Matheus falou que provavelmente esse valor seria considerado 1, verificar com Bárbara
+    #TODO Matheus falou que provavelmente esse valor seria considerado 1, verificar com Bárbara
+    theta_BV = 1 
     Tt_c = 0
     V_BV = 0
 
@@ -64,13 +65,13 @@ def diferential(t, y):
     alpha_T_h = 0
     estable_T_h = 0
 
-    rho_B = 0
-    alpha_B = 0
-    estable_B = 0
+    rho_B = 0     #* Replication rate of B cells
+    alpha_B = 0   #* Replication rate of B cells 
+    estable_B = 0 # Estable B value
     
-    rho_F = 0
-    gamma_F = 0
-    FT = 0
+    rho_F = 0   # Antibodies production rate (by B cells) 
+    gamma_F = 0 # Antibodies migration rate (to tissue)
+    FT = 0      # Average number of antibodies on tissue
 
     # When working with only one diferential function there must be created a null extra position
     dy = np.zeros(5)
@@ -84,12 +85,11 @@ def diferential(t, y):
     # B cells
     dy[3] = (b_rho * ((rho_B * y[2] * y[0]) - (y[2] * y[0] * y[3]))) + alpha_B * (estable_B - y[3])
     # Antibodies
-    dy[4] = rho_F - ((gamma_F * theta_BV * (y[4] - FT)) * (V_BV / V_LN))
+    dy[4] = rho_F * y[3] - ((gamma_F * theta_BV * (y[4] - FT)) * (V_BV / V_LN))
 
     return dy
 
 # Defines the parameters
-
 
 # Step
 h = 0.01
@@ -98,11 +98,11 @@ h = 0.01
 t_range = np.array([0.0, 4.0])  # TODO
 
 # Initial values
-DL = 0     # Dendritic cells
+DL = 0      # Dendritic cells
 TL_c = 0.2  # Cytotoxic T cells
 TL_h = 0.4  # Helper T cells
-B = 0      # B cells
-FL = 0     # Antibodies
+B = 0       # B cells
+FL = 0      # Antibodies
 y_init = np.array([DL, TL_c, TL_h, B, FL], dtype='f')
 
 # Calls the Euler method
