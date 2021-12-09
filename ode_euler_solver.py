@@ -49,16 +49,25 @@ def diferential(t, y):
     DT = 0
     V_LV = 0
     V_LN = 0.1
+    
     alpha_T_c = 0
     estable_T_c = 0
     gamma_T = 0
-    theta_BV = 0
+    theta_BV = 1 #TODO Matheus falou que provavelmente esse valor seria considerado 1, verificar com Bárbara
     Tt_c = 0
     V_BV = 0
+
+    #TODO esses valores ainda estão meio confusos na primeira parte da tese do Matheus
+    b_T = 0
+    rho_T = 0
     b_rho = 0
+    alpha_T_h = 0
+    estable_T_h = 0
+
     rho_B = 0
     alpha_B = 0
     estable_B = 0
+    
     rho_F = 0
     gamma_F = 0
     FT = 0
@@ -71,7 +80,7 @@ def diferential(t, y):
     # Cytotoxic T cells
     dy[1] = alpha_T_c * (estable_T_c - y[1]) - (gamma_T * theta_BV * (y[1] - Tt_c)) * (V_BV / V_LN)
     # Helper T cells
-    dy[2] = 0  # TODO tirando dúvida com o Matheus com relação as taxas do TCC
+    dy[2] = b_T*(rho_T * y[2] * y[0] - y[2]*y[0]) - (b_rho * y[2] * y[0] * y[3]) + alpha_T_h * (estable_T_h - y[2])
     # B cells
     dy[3] = (b_rho * ((rho_B * y[2] * y[0]) - (y[2] * y[0] * y[3]))) + alpha_B * (estable_B - y[3])
     # Antibodies
